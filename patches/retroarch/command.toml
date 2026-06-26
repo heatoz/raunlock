@@ -1,0 +1,99 @@
+# command.c
+
+[pause_hardcore_on_state_loaded]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+   {
+      const char *_msg = msg_hash_to_str(MSG_CHEEVOS_HARDCORE_MODE_DISABLED);
+      rcheevos_pause_hardcore();
+      runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
+            MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
+   }
+#endif
+'''
+rewrite = '''
+// [PATCH] unblockh: do not pause hardcore on state load
+'''
+
+[block_movie_seek_frame]
+match = '''
+#ifdef HAVE_CHEEVOS
+   ret = !rcheevos_hardcore_active();
+#endif
+'''
+rewrite = '''
+// [PATCH] unblockh: allow movie seek to frame in hardcore mode
+'''
+
+[pause_hardcore_on_write_core_ram]
+match = '''
+   if (rcheevos_hardcore_active())
+   {
+      RARCH_LOG("[Command] Achievements hardcore mode disabled by WRITE_CORE_RAM.\n");
+      rcheevos_pause_hardcore();
+   }
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow WRITE_CORE_RAM in hardcore mode
+'''
+
+[pause_hardcore_on_write_core_memory]
+match = '''
+#ifdef HAVE_CHEEVOS
+      if (rcheevos_hardcore_active())
+      {
+         RARCH_LOG("[Command] Achievements hardcore mode disabled by WRITE_CORE_MEMORY.\n");
+         rcheevos_pause_hardcore();
+      }
+#endif
+'''
+rewrite = '''
+// [PATCH] unblockh: allow WRITE_CORE_MEMORY in hardcore mode
+'''
+
+[block_entry_state_load]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      return false;
+#endif
+#ifdef HAVE_NETWORKING
+   if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
+      return false;
+#endif
+
+   if (!runloop_get_entry_state_path(
+'''
+rewrite = '''
+// [PATCH] unblockh: allow entry state load in hardcore mode
+#ifdef HAVE_NETWORKING
+   if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
+      return false;
+#endif
+
+   if (!runloop_get_entry_state_path(
+'''
+
+[block_auto_state_load]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      return false;
+#endif
+#ifdef HAVE_NETWORKING
+   if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
+      return false;
+#endif
+
+   _len = strlcpy(savestate_name_auto,
+'''
+rewrite = '''
+// [PATCH] unblockh: allow auto state load in hardcore mode
+#ifdef HAVE_NETWORKING
+   if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
+      return false;
+#endif
+
+   _len = strlcpy(savestate_name_auto,
+'''
