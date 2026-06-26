@@ -1,0 +1,32 @@
+# src/core/achievements.cpp
+
+[rewrite.pause_throttle]
+match = '''
+u32 Achievements::GetPauseThrottleFrames()
+{
+  :[_]
+}
+'''
+rewrite = '''
+u32 Achievements::GetPauseThrottleFrames()
+{
+  // [PATCH] unblockh: no pause throttle in hardcore mode
+  return 0;
+}
+'''
+
+[rewrite.confirm_disable_dialog]
+match = '''
+void Achievements::ConfirmHardcoreModeDisableAsync(:[args])
+{
+  :[_]
+}
+'''
+rewrite = '''
+void Achievements::ConfirmHardcoreModeDisableAsync(:[args])
+{
+  // [PATCH] unblockh: skip dialog, execute action without disabling hardcore
+  if (callback)
+    callback(true);
+}
+'''
