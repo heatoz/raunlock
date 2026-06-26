@@ -1,0 +1,44 @@
+# retroarch.c
+
+[block_load_savefile]
+match = '''
+#ifdef HAVE_CHEEVOS
+         if (rcheevos_hardcore_active())
+         {
+            const char *_msg = msg_hash_to_str(MSG_CHEEVOS_LOAD_SAVEFILE_PREVENTED_BY_HARDCORE_MODE);
+            runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
+                                   MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_WARNING);
+            return false;
+         }
+#endif
+'''
+rewrite = '''
+// [PATCH] unblockh: allow loading savefiles in hardcore mode
+'''
+
+[block_load_state]
+match = '''
+#ifdef HAVE_CHEEVOS
+            if (rcheevos_hardcore_active())
+            {
+               const char *_msg = msg_hash_to_str(MSG_CHEEVOS_LOAD_STATE_PREVENTED_BY_HARDCORE_MODE);
+               runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
+                     MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_WARNING);
+               return false;
+            }
+#endif
+'''
+rewrite = '''
+// [PATCH] unblockh: allow loading states in hardcore mode
+'''
+
+[block_rewind]
+match = '''
+#ifdef HAVE_CHEEVOS
+            if (rcheevos_hardcore_active())
+               return false;
+#endif
+'''
+rewrite = '''
+// [PATCH] unblockh: allow rewind in hardcore mode
+'''
