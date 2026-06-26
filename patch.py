@@ -1,110 +1,137 @@
 #!/usr/bin/env python3
-# Usage: python patch.py <source_code> [--dry-run]
-# Example:  python patch.py duckstation
+# Usage: ./patch <project> [--dry-run]
+# Example: ./patch duckstation
 #
-# Reads patches/duckstation/*.toml
-# The first comentary on each toml defines its file:
+# Reads patches/<project>/*.toml from the patches/ folder.
+# The first comment of each toml defines its target file:
 #   # src/core/achievements.cpp
-# Will patch (from source core)/src/core/achievements.cpp
+#
+# To compile:
+#   pyinstaller --onefile --add-data "patches:patches" patch.py
 
 import argparse
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
-PATCHES_DIR = Path(__file__).parent / "patches"
 
-
-def get_target(toml_path: Path) -> str | None:
+def get_patches_dir() -> Path:
     """
-    Gets the target file from the toml.
+    Returns the patches/ directory, whether running as a script or a
+    pyinstaller-compiled binary.
+
+    Returns:
+        Path to the patches/ directory.
+    """
+    import os
+    if getattr(sys, "frozen", False):
+        # running as pyinstaller binary: files are extracted to _MEIPASS
+        base = Path(sys._MEIPASS)
+    else:
+        # running as plain script
+        base = Path(__file__).parent
+    return base / "patches"
+
+
+def get_target(toml_content: str) -> str | None:
+    """
+    Reads the target file path from the first comment in a toml string.
 
     Args:
-        toml_path:
-            The toml to read.
-    
-    Returns:
-        str:
-            The file to be patched.
-        None:
-            No path could be found.
-    """
+        toml_content: The toml content to read.
 
-    for line in toml_path.read_text(encoding="utf-8").splitlines():
+    Returns:
+        The target file path, or None if no comment was found.
+    """
+    for line in toml_content.splitlines():
         line = line.strip()
         if line.startswith("#"):
             return line.lstrip("#").strip()
     return None
 
 
-def apply(toml_path: Path, target: Path, dry_run: bool) -> bool:
+def apply(toml_content: str, target: Path, dry_run: bool) -> bool:
     """
-    Applies a patch using comby.
+    Applies a comby patch from a toml string to a target file.
 
     Args:
-        toml_path:
-            The toml to read.
-        target:
-            The file to be patched
-        dry_run:
-            Run without patching.
-    
+        toml_content: The toml patch content.
+        target: The file to patch.
+        dry_run: If True, shows diff without modifying the file.
+
     Returns:
-        bool:
-            Operation failed or not.
+        True if comby exited successfully, False otherwise.
     """
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".toml",
+                                     delete=False, encoding="utf-8") as tmp:
+        tmp.write(toml_content)
+        tmp_path = tmp.name
 
-    cmd = ["comby", "-config", str(toml_path), "-f", str(target)]
-    if not dry_run:
-        cmd.append("-in-place")
+    try:
+        cmd = ["comby", "-config", tmp_path, "-f", str(target)]
+        if not dry_run:
+            cmd.append("-in-place")
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True)
 
-    if result.stdout.strip():
-        print(result.stdout.strip())
+        if result.stdout.strip():
+            print(result.stdout.strip())
 
-    return result.returncode == 0
+        return result.returncode == 0
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("source", help="Source code name (ex: duckstation)")
-    parser.add_argument("--dry-run", action="store_true", help="Shows diff without patching")
+    patches_dir = get_patches_dir()
+
+    available = sorted(p.name for p in patches_dir.iterdir() if p.is_dir()) \
+        if patches_dir.is_dir() else []
+
+    parser = argparse.ArgumentParser(prog="patch")
+    parser.add_argument("project", help=f"Project to patch. Available: {', '.join(available)}")
+    parser.add_argument("--dry-run", action="store_true", help="Show diff without modifying files")
     args = parser.parse_args()
 
-    patches_dir = PATCHES_DIR / args.project
-    if not patches_dir.is_dir():
-        print(f"Folder couldn't be found: {patches_dir}")
+    project_dir = patches_dir / args.project
+    if not project_dir.is_dir():
+        print(f"Project '{args.project}' not found.")
+        print(f"Available: {', '.join(available)}")
         sys.exit(1)
 
-    toml_files = sorted(patches_dir.glob("*.toml"))
+    toml_files = sorted(project_dir.glob("*.toml"))
     if not toml_files:
-        print(f"No toml on: {patches_dir}")
+        print(f"No .toml files found in {project_dir}")
         sys.exit(0)
 
     repo = Path(".").resolve()
     ok = fail = 0
 
-    for toml in toml_files:
-        target_rel = get_target(toml)
+    print(f"{args.project} -- {len(toml_files)} patch(es) in {repo}\n")
+
+    for toml_file in toml_files:
+        toml_content = toml_file.read_text(encoding="utf-8")
+        target_rel = get_target(toml_content)
+
         if not target_rel:
-            print(f"{toml.name}: no path commentary, skipping.")
+            print(f"{toml_file.name}: no path comment found, skipping.")
             continue
 
         target = repo / target_rel
         if not target.exists():
-            print(f"{toml.name}: file couldn't be found: {target_rel}")
+            print(f"{toml_file.name}: file not found: {target_rel}")
             fail += 1
             continue
 
         label = "dry-run" if args.dry_run else "patching"
-        print(f"> {toml.name} -> {target_rel} ({label})")
+        print(f"> {toml_file.name} -> {target_rel} ({label})")
 
-        if apply(toml, target, args.dry_run):
-            print("done!")
+        if apply(toml_content, target, args.dry_run):
+            print("  done!")
             ok += 1
         else:
-            print("failed :()")
+            print("  failed.")
             fail += 1
 
     print(f"\n{ok} ok  {fail} failed")
