@@ -1,0 +1,40 @@
+# input/bsv/bsvmovie.c
+
+[block_movie_seek]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      return false;
+#endif
+   if (!movie_find_checkpoint_before(:[_])
+'''
+rewrite = '''
+// [PATCH] unblockh: allow movie seek in hardcore mode
+   if (!movie_find_checkpoint_before(:[_])
+'''
+
+[block_movie_skip_next]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      return false;
+#endif
+   input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_NEXT_CHECKPOINT;
+'''
+rewrite = '''
+// [PATCH] unblockh: allow movie skip next checkpoint in hardcore mode
+   input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_NEXT_CHECKPOINT;
+'''
+
+[block_movie_skip_prev]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      return false;
+#endif
+   input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_PREV_CHECKPOINT;
+'''
+rewrite = '''
+// [PATCH] unblockh: allow movie skip prev checkpoint in hardcore mode
+   input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_PREV_CHECKPOINT;
+'''
