@@ -1,0 +1,112 @@
+# src/core/system.cpp
+
+[load_state_hardcore_block]
+match = '''
+  if (Achievements::IsHardcoreModeActive())
+  {
+    Achievements::ConfirmHardcoreModeDisableAsync(
+      TRANSLATE("Achievements", "Loading state"),
+      [path = std::string(path), save_undo_state, force_update_display](bool approved) {
+        if (approved)
+          LoadState(path.c_str(), nullptr, save_undo_state, force_update_display);
+      });
+    return std::nullopt;
+  }
+
+  FlushSaveStates();
+'''
+rewrite = '''
+  // [PATCH] unblockh: allow load state in hardcore mode
+
+  FlushSaveStates();
+'''
+
+[frame_step_hardcore_block]
+match = '''
+  if (Achievements::IsHardcoreModeActive())
+  {
+    Achievements::ConfirmHardcoreModeDisableAsync("Frame stepping", [](bool approved) {
+      if (approved)
+        FrameStep();
+    });
+    return;
+  }
+
+  s_state.frame_step_request = true;
+'''
+rewrite = '''
+  // [PATCH] unblockh: allow frame step in hardcore mode
+  s_state.frame_step_request = true;
+'''
+
+[undo_load_state_hardcore_block]
+match = '''
+  if (Achievements::IsHardcoreModeActive())
+  {
+    Achievements::ConfirmHardcoreModeDisableAsync(TRANSLATE_SV("System", "Undo load state"), [](bool result) {
+      if (result)
+        Host::RunOnCoreThread(&System::UndoLoadState);
+    });
+    return;
+  }
+
+  std::string osd_key = "UndoLoadState";
+'''
+rewrite = '''
+  // [PATCH] unblockh: allow undo load state in hardcore mode
+  std::string osd_key = "UndoLoadState";
+'''
+
+[boot_system_hardcore_save_state_check]
+match = '''
+  // Achievement hardcore checks before committing to anything.
+  if (disc)
+  {
+    if ((!parameters.save_state.empty() || !exe_override.empty()) && Achievements::IsHardcoreModeActive())
+    {
+      const std::string_view message = !parameters.save_state.empty() ?
+                                         TRANSLATE_SV("Achievements", "Resuming state") :
+                                         TRANSLATE_SV("Achievements", "Overriding executable");
+      Achievements::ConfirmHardcoreModeDisableAsync(message,
+                                                    [parameters = std::move(parameters)](bool approved) mutable {
+                                                      if (approved)
+                                                      {
+                                                        parameters.disable_achievements_hardcore_mode = true;
+                                                        BootSystem(std::move(parameters), nullptr);
+                                                      }
+                                                    });
+
+      // Technically a failure, but user-initiated. Returning false here would try to display a non-existent error.
+      Host::OnSystemStopping();
+      DestroySystem();
+      return true;
+    }
+  }
+
+  // Are we fast booting?
+'''
+rewrite = '''
+  // [PATCH] unblockh: allow booting with save state or exe override in hardcore mode
+
+  // Are we fast booting?
+'''
+
+[load_state_from_buffer_block]
+match = '''
+  // Updating game/loading settings can turn on hardcore mode. Catch this.
+  Achievements::DisableHardcoreMode(true, true);
+'''
+rewrite = '''
+  // [PATCH] unblockh: stop disabling hardcore! :)
+  // Achievements::DisableHardcoreMode(true, true);
+'''
+
+[change_exe_override_block]
+match = '''
+  // Achievements hardcode mode should be disabled.
+  Achievements::DisableHardcoreMode(true, false);
+'''
+rewrite = '''
+  // [PATCH] unblockh: stop disabling hardcore! :)
+  // Achievements::DisableHardcoreMode(true, false);
+'''

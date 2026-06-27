@@ -1,0 +1,31 @@
+# src/core/settings.cpp
+
+[apply_setting_restrictions_hardcore_block]
+match = '''
+  // if challenge mode is enabled, disable things like rewind since they use save states
+  if (Achievements::IsHardcoreModeActive())
+  {
+    emulation_speed = (emulation_speed != 0.0f) ? std::max(emulation_speed, 1.0f) : 0.0f;
+    fast_forward_speed = (fast_forward_speed != 0.0f) ? std::max(fast_forward_speed, 1.0f) : 0.0f;
+    turbo_speed = (turbo_speed != 0.0f) ? std::max(turbo_speed, 1.0f) : 0.0f;
+    rewind_enable = false;
+    if (cpu_overclock_enable && GetCPUOverclockPercent() < 100)
+    {
+      cpu_overclock_enable = false;
+      UpdateOverclockActive();
+    }
+
+#ifndef __ANDROID__
+    enable_gdb_server = false;
+#endif
+
+    gpu_show_vram = false;
+    gpu_dump_cpu_to_vram_copies = false;
+    gpu_dump_vram_to_cpu_copies = false;
+  }
+}
+'''
+rewrite = '''
+  // [PATCH] unblockh: removed hardcore mode setting restrictions (speed, rewind, overclock, debug)
+}
+'''

@@ -1,0 +1,234 @@
+# src/core/hotkeys.cpp
+
+[rewind_hardcore_confirm]
+match = '''
+    else if (Achievements::IsHardcoreModeActive())
+    {
+      // because this is keypress-based, don't enable it on accept
+      Achievements::ConfirmHardcoreModeDisableAsync("Rewinding", {});
+      return false;
+    }
+  }
+  else
+  {
+    summary = TRANSLATE_STR("OSDMessage", "Rewinding is not enabled.");
+  }
+'''
+rewrite = '''
+  }
+  else
+  {
+    summary = TRANSLATE_STR("OSDMessage", "Rewinding is not enabled.");
+  }
+'''
+
+[toggle_overclocking_hardcore_guard]
+match = '''
+     if (!pressed && System::IsValid() && !Achievements::IsHardcoreModeActive())
+     {
+       g_settings.cpu_overclock_enable = !g_settings.cpu_overclock_enable;
+'''
+rewrite = '''
+     if (!pressed && System::IsValid())
+     {
+       // [PATCH] unblockh: allow overclocking toggle in hardcore mode
+       g_settings.cpu_overclock_enable = !g_settings.cpu_overclock_enable;
+'''
+
+[decrease_speed_hardcore_floor]
+match = '''
+       g_settings.emulation_speed =
+         std::max(g_settings.emulation_speed - 0.1f, Achievements::IsHardcoreModeActive() ? 1.0f : 0.1f);
+'''
+rewrite = '''
+       g_settings.emulation_speed =
+         std::max(g_settings.emulation_speed - 0.1f, 0.1f); // [PATCH] unblockh: no hardcore speed floor
+'''
+
+[reset_speed_hardcore_floor]
+match = '''
+       g_settings.emulation_speed = std::max(Core::GetFloatSettingValue("Main", "EmulationSpeed", 1.0f),
+                                             Achievements::IsHardcoreModeActive() ? 1.0f : 0.1f);
+'''
+rewrite = '''
+       g_settings.emulation_speed = std::max(Core::GetFloatSettingValue("Main", "EmulationSpeed", 1.0f),
+                                             0.1f); // [PATCH] unblockh: no hardcore speed floor
+'''
+
+[freecam_toggle_hardcore_guard]
+match = '''
+     if (!pressed && !Achievements::IsHardcoreModeActive())
+       GTE::SetFreecamEnabled(!GTE::IsFreecamEnabled());
+'''
+rewrite = '''
+     if (!pressed) // [PATCH] unblockh: allow freecam in hardcore mode
+       GTE::SetFreecamEnabled(!GTE::IsFreecamEnabled());
+'''
+
+[freecam_reset_hardcore_guard]
+match = '''
+     if (!pressed && !Achievements::IsHardcoreModeActive())
+       GTE::ResetFreecam();
+'''
+rewrite = '''
+     if (!pressed) // [PATCH] unblockh: allow freecam reset in hardcore mode
+       GTE::ResetFreecam();
+'''
+
+[freecam_move_left_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamMoveAxis(0, std::max(static_cast<float>(pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamMoveAxis(0, std::max(static_cast<float>(pressed), 0.0f));
+'''
+
+[freecam_move_right_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamMoveAxis(0, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamMoveAxis(0, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+
+[freecam_move_up_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamMoveAxis(1, std::max(static_cast<float>(pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamMoveAxis(1, std::max(static_cast<float>(pressed), 0.0f));
+'''
+
+[freecam_move_down_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamMoveAxis(1, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamMoveAxis(1, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+
+[freecam_move_forward_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamMoveAxis(2, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamMoveAxis(2, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+
+[freecam_move_backward_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamMoveAxis(2, std::max(static_cast<float>(pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamMoveAxis(2, std::max(static_cast<float>(pressed), 0.0f));
+'''
+
+[freecam_rotate_left_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamRotateAxis(1, std::max(static_cast<float>(pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamRotateAxis(1, std::max(static_cast<float>(pressed), 0.0f));
+'''
+
+[freecam_rotate_right_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamRotateAxis(1, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamRotateAxis(1, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+
+[freecam_rotate_forward_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamRotateAxis(0, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamRotateAxis(0, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+
+[freecam_rotate_backward_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamRotateAxis(0, std::max(static_cast<float>(pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamRotateAxis(0, std::max(static_cast<float>(pressed), 0.0f));
+'''
+
+[freecam_roll_left_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamRotateAxis(2, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamRotateAxis(2, std::min(static_cast<float>(-pressed), 0.0f));
+'''
+
+[freecam_roll_right_hardcore_guard]
+match = '''
+     if (Achievements::IsHardcoreModeActive())
+       return;
+
+     GTE::SetFreecamRotateAxis(2, std::max(static_cast<float>(pressed), 0.0f));
+'''
+rewrite = '''
+     // [PATCH] unblockh: allow freecam in hardcore mode
+     GTE::SetFreecamRotateAxis(2, std::max(static_cast<float>(pressed), 0.0f));
+'''
+
+[toggle_vram_hardcore_guard]
+match = '''
+       if (!g_settings.gpu_pgxp_enable || Achievements::IsHardcoreModeActive())
+         return;
+
+       g_settings.gpu_show_vram = !g_settings.gpu_show_vram;
+'''
+rewrite = '''
+       if (!g_settings.gpu_pgxp_enable) // [PATCH] unblockh: allow VRAM view in hardcore mode
+         return;
+
+       g_settings.gpu_show_vram = !g_settings.gpu_show_vram;
+'''

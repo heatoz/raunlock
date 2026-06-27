@@ -1,0 +1,40 @@
+# src/core/imgui_overlays.cpp
+
+[are_any_debug_windows_enabled_hardcore_block]
+match = '''
+  const bool block_all = Achievements::IsHardcoreModeActive();
+  if (block_all)
+    return false;
+
+  for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
+'''
+rewrite = '''
+  // [PATCH] unblockh: allow debug windows in hardcore mode
+  for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
+'''
+
+[update_debug_window_config_hardcore_block]
+match = '''
+  const bool block_all = Achievements::IsHardcoreModeActive();
+  bool was_changed = false;
+
+  for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
+  {
+    AuxiliaryRenderWindowState& state = s_debug_window_state[i];
+    const DebugWindowInfo& info = s_debug_window_info[i];
+
+    const bool current = (state.window_handle != nullptr);
+    const bool enabled = (!block_all && Core::GetBaseBoolSettingValue(DEBUG_WINDOW_CONFIG_SECTION, info.name, false));
+'''
+rewrite = '''
+  // [PATCH] unblockh: allow debug windows in hardcore mode
+  bool was_changed = false;
+
+  for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
+  {
+    AuxiliaryRenderWindowState& state = s_debug_window_state[i];
+    const DebugWindowInfo& info = s_debug_window_info[i];
+
+    const bool current = (state.window_handle != nullptr);
+    const bool enabled = Core::GetBaseBoolSettingValue(DEBUG_WINDOW_CONFIG_SECTION, info.name, false);
+'''
