@@ -1,0 +1,37 @@
+# cheevos/cheevos.c
+
+[block_rc_client_reset_event]
+match = '''
+   case RC_CLIENT_EVENT_RESET:
+      command_event(CMD_EVENT_RESET, NULL); /* reset the game */
+      break;
+'''
+rewrite = '''
+   case RC_CLIENT_EVENT_RESET:
+      // [PATCH] unblockh: suppress rc_client reset event (triggered by rewind)
+      break;
+'''
+
+[block_rewind_reinit_on_game_load]
+match = '''
+#if HAVE_REWIND
+   if (!rcheevos_hardcore_active())
+   {
+      /* Re-enable rewind. Additional space will be
+       * allocated for the achievement state data */
+      if (config_get_ptr()->bools.rewind_enable)
+         command_event(CMD_EVENT_REWIND_REINIT, NULL);
+   }
+#endif
+'''
+rewrite = '''
+#if HAVE_REWIND
+   // [PATCH] unblockh: always reinit rewind after game load, even in hardcore
+   {
+      /* Re-enable rewind. Additional space will be
+       * allocated for the achievement state data */
+      if (config_get_ptr()->bools.rewind_enable)
+         command_event(CMD_EVENT_REWIND_REINIT, NULL);
+   }
+#endif
+'''
