@@ -1,0 +1,35 @@
+# cheat_manager.c
+
+[block_apply_cheats]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (idx != 0 && rcheevos_hardcore_active())
+      cheat_manager_pause_cheevos();
+#endif
+}
+
+void cheat_manager_set_code(unsigned i, const char *str)
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow cheats in hardcore mode
+}
+
+void cheat_manager_set_code(unsigned i, const char *str)
+'''
+
+[block_cheat_search_apply]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (cheat_applied && rcheevos_hardcore_active())
+      cheat_manager_pause_cheevos();
+#endif
+}
+
+void cheat_manager_match_action(enum cheat_match_action_type match_action, unsigned int target_match_idx, unsigned int *address, unsigned int *address_mask,
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow cheat search apply in hardcore mode
+}
+
+void cheat_manager_match_action(enum cheat_match_action_type match_action, unsigned int target_match_idx, unsigned int *address, unsigned int *address_mask,
+'''

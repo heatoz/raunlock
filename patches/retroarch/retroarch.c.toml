@@ -11,9 +11,11 @@ match = '''
             return false;
          }
 #endif
+         return event_load_save_files(runloop_st->flags & RUNLOOP_FLAG_IS_SRAM_LOAD_DISABLED);
 '''
 rewrite = '''
-// [PATCH] unblockh: allow loading savefiles in hardcore mode
+         // [PATCH] unblockh: allow loading savefiles in hardcore mode
+         return event_load_save_files(runloop_st->flags & RUNLOOP_FLAG_IS_SRAM_LOAD_DISABLED);
 '''
 
 [block_load_state]
@@ -27,18 +29,32 @@ match = '''
                return false;
             }
 #endif
+#ifdef HAVE_NETWORKING
+            if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
 '''
 rewrite = '''
-// [PATCH] unblockh: allow loading states in hardcore mode
+            // [PATCH] unblockh: allow loading state in hardcore mode
+#ifdef HAVE_NETWORKING
+            if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
 '''
 
-[block_rewind]
+[block_rewind_init]
 match = '''
 #ifdef HAVE_CHEEVOS
             if (rcheevos_hardcore_active())
                return false;
 #endif
+#ifdef HAVE_NETWORKING
+            if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
+               return false;
+#endif
+            if (rewind_enable)
 '''
 rewrite = '''
-// [PATCH] unblockh: allow rewind in hardcore mode
+            // [PATCH] unblockh: allow rewind init in hardcore mode
+#ifdef HAVE_NETWORKING
+            if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
+               return false;
+#endif
+            if (rewind_enable)
 '''

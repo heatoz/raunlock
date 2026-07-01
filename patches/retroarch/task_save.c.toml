@@ -1,0 +1,31 @@
+# tasks/task_save.c
+
+[block_load_state_read_chunk]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      task_set_flags(task, RETRO_TASK_FLG_CANCELLED, true);
+#endif
+
+   remaining          = MIN(state->size - state->bytes_read, SAVE_STATE_CHUNK);
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow loading state chunks in hardcore mode
+
+   remaining          = MIN(state->size - state->bytes_read, SAVE_STATE_CHUNK);
+'''
+
+[block_load_state_apply]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (rcheevos_hardcore_active())
+      goto error;
+#endif
+
+   RARCH_LOG("[State] %s \"%s\", %u %s.\n",
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow applying load state in hardcore mode
+
+   RARCH_LOG("[State] %s \"%s\", %u %s.\n",
+'''

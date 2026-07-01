@@ -1,0 +1,113 @@
+# runloop.c
+
+[block_entry_state_load]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (     !cheevos_enable
+         || !cheevos_hardcore_mode_enable)
+#endif
+   {
+#ifdef HAVE_BSV_MOVIE
+      /* Ignore entry state if we're doing bsv playback (we do want it
+         for bsv recording though) */
+      if (!(input_st->bsv_movie_state.flags & BSV_FLAG_MOVIE_START_PLAYBACK))
+#endif
+      {
+         if (     entry_state_load
+               && !command_event_load_entry_state(settings))
+         {
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow entry state load in hardcore mode
+   {
+#ifdef HAVE_BSV_MOVIE
+      /* Ignore entry state if we're doing bsv playback (we do want it
+         for bsv recording though) */
+      if (!(input_st->bsv_movie_state.flags & BSV_FLAG_MOVIE_START_PLAYBACK))
+#endif
+      {
+         if (     entry_state_load
+               && !command_event_load_entry_state(settings))
+         {
+'''
+
+[block_rewind_hotkey]
+match = '''
+#ifdef HAVE_CHEEVOS
+   /* Make sure not to evaluate this before calling menu_driver_iterate
+    * as that may change its value */
+   cheevos_hardcore_active = rcheevos_hardcore_active();
+
+   if (!cheevos_hardcore_active)
+#endif
+   {
+      /* Check rewind hotkey */
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow rewind hotkey in hardcore mode
+   cheevos_hardcore_active = rcheevos_hardcore_active();
+   {
+      /* Check rewind hotkey */
+'''
+
+[block_pause_rate_limit]
+match = '''
+#ifdef HAVE_CHEEVOS
+      if (cheevos_hardcore_active)
+      {
+         if (!(runloop_st->flags & RUNLOOP_FLAG_PAUSED))
+         {
+            /* In hardcore mode, the user is only allowed to pause infrequently. */
+            if ((pause_pressed && !old_pause_pressed) ||
+               (!focused && old_focus && pause_nonactive))
+            {
+               /* If the user is trying to pause, check to see if it's allowed. */
+               if (!rcheevos_is_pause_allowed())
+               {
+                  pause_pressed = false;
+                  if (pause_nonactive)
+                     focused = true;
+               }
+            }
+         }
+      }
+      else /* frame advance not allowed in hardcore */
+#endif
+      {
+         frameadvance_pressed = BIT256_GET(current_bits, RARCH_FRAMEADVANCE);
+'''
+rewrite = '''
+      // [PATCH] unblockh: allow frame advance and unrestricted pause in hardcore mode
+      {
+         frameadvance_pressed = BIT256_GET(current_bits, RARCH_FRAMEADVANCE);
+'''
+
+[block_frameadvance_unpause]
+match = '''
+#ifdef HAVE_CHEEVOS
+         else if (!cheevos_hardcore_active)
+#else
+         else
+#endif
+            runloop_paused = false;
+'''
+rewrite = '''
+         else
+            runloop_paused = false;
+'''
+
+[block_slowmotion_hotkey]
+match = '''
+#ifdef HAVE_CHEEVOS
+   if (!cheevos_hardcore_active)
+#endif
+   {
+      {
+         /* Check slowmotion hotkeys */
+'''
+rewrite = '''
+   // [PATCH] unblockh: allow slowmotion in hardcore mode
+   {
+      {
+         /* Check slowmotion hotkeys */
+'''

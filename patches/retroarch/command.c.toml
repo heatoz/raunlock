@@ -1,6 +1,6 @@
 # command.c
 
-[pause_hardcore_on_state_loaded]
+[block_post_state_loaded]
 match = '''
 #ifdef HAVE_CHEEVOS
    if (rcheevos_hardcore_active())
@@ -11,34 +11,46 @@ match = '''
             MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
    }
 #endif
+#ifdef HAVE_NETWORKING
+   netplay_driver_ctl(RARCH_NETPLAY_CTL_LOAD_SAVESTATE, NULL);
 '''
 rewrite = '''
-// [PATCH] unblockh: do not pause hardcore on state load
+   // [PATCH] unblockh: allow post-state-loaded in hardcore mode
+#ifdef HAVE_NETWORKING
+   netplay_driver_ctl(RARCH_NETPLAY_CTL_LOAD_SAVESTATE, NULL);
 '''
 
-[block_movie_seek_frame]
+[block_movie_seek_hardcore_check]
 match = '''
 #ifdef HAVE_CHEEVOS
    ret = !rcheevos_hardcore_active();
 #endif
+   if (ret)
+      ret = movie_seek_to_frame(input_st, frame);
 '''
 rewrite = '''
-// [PATCH] unblockh: allow movie seek to frame in hardcore mode
+   // [PATCH] unblockh: allow movie seek command in hardcore mode
+   if (ret)
+      ret = movie_seek_to_frame(input_st, frame);
 '''
 
-[pause_hardcore_on_write_core_ram]
+[block_write_core_ram]
 match = '''
    if (rcheevos_hardcore_active())
    {
       RARCH_LOG("[Command] Achievements hardcore mode disabled by WRITE_CORE_RAM.\n");
       rcheevos_pause_hardcore();
    }
+
+   while (*arg)
 '''
 rewrite = '''
    // [PATCH] unblockh: allow WRITE_CORE_RAM in hardcore mode
+
+   while (*arg)
 '''
 
-[pause_hardcore_on_write_core_memory]
+[block_write_core_memory]
 match = '''
 #ifdef HAVE_CHEEVOS
       if (rcheevos_hardcore_active())
@@ -47,12 +59,18 @@ match = '''
          rcheevos_pause_hardcore();
       }
 #endif
+   }
+
+   cmd->replier(cmd, reply, strlen(reply));
 '''
 rewrite = '''
-// [PATCH] unblockh: allow WRITE_CORE_MEMORY in hardcore mode
+      // [PATCH] unblockh: allow WRITE_CORE_MEMORY in hardcore mode
+   }
+
+   cmd->replier(cmd, reply, strlen(reply));
 '''
 
-[block_entry_state_load]
+[block_load_entry_state]
 match = '''
 #ifdef HAVE_CHEEVOS
    if (rcheevos_hardcore_active())
@@ -66,7 +84,7 @@ match = '''
    if (!runloop_get_entry_state_path(
 '''
 rewrite = '''
-// [PATCH] unblockh: allow entry state load in hardcore mode
+   // [PATCH] unblockh: allow entry state load in hardcore mode
 #ifdef HAVE_NETWORKING
    if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
       return false;
@@ -75,7 +93,7 @@ rewrite = '''
    if (!runloop_get_entry_state_path(
 '''
 
-[block_auto_state_load]
+[block_load_auto_state]
 match = '''
 #ifdef HAVE_CHEEVOS
    if (rcheevos_hardcore_active())
@@ -86,14 +104,14 @@ match = '''
       return false;
 #endif
 
-   _len = strlcpy(savestate_name_auto,
+   _len = strlcpy(savestate_name_auto, name_savestate,
 '''
 rewrite = '''
-// [PATCH] unblockh: allow auto state load in hardcore mode
+   // [PATCH] unblockh: allow auto state load in hardcore mode
 #ifdef HAVE_NETWORKING
    if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
       return false;
 #endif
 
-   _len = strlcpy(savestate_name_auto,
+   _len = strlcpy(savestate_name_auto, name_savestate,
 '''
