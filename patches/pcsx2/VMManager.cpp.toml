@@ -1,0 +1,129 @@
+# pcsx2/VMManager.cpp
+
+[allow_load_state_in_hardcore]
+match = '''
+bool VMManager::LoadState(const char* filename, Error* error)
+{
+	if (Achievements::IsHardcoreModeActive())
+	{
+		Error::SetString(error,
+			TRANSLATE_STR("VMManager", "Cannot load state while RetroAchievements Hardcore Mode is active."));
+		return false;
+	}
+
+	if (MemcardBusy::IsBusy())
+'''
+rewrite = '''
+bool VMManager::LoadState(const char* filename, Error* error)
+{
+	// [PATCH] unblockh: allow load state in hardcore mode
+	if (MemcardBusy::IsBusy())
+'''
+
+[allow_load_state_from_slot_in_hardcore]
+match = '''
+	if (Achievements::IsHardcoreModeActive())
+	{
+		Error::SetString(error,
+			TRANSLATE_STR("VMManager", "Cannot load state while RetroAchievements Hardcore Mode is active."));
+		return false;
+	}
+
+	if (MemcardBusy::IsBusy())
+	{
+		Error::SetString(error,
+			TRANSLATE_STR("VMManager",
+				"The memory card is busy, so the state load operation has been cancelled to prevent data loss."));
+		return false;
+	}
+
+	if (!DoLoadState(filename.c_str(), error))
+		return false;
+'''
+rewrite = '''
+	// [PATCH] unblockh: allow load state from slot in hardcore mode
+	if (MemcardBusy::IsBusy())
+	{
+		Error::SetString(error,
+			TRANSLATE_STR("VMManager",
+				"The memory card is busy, so the state load operation has been cancelled to prevent data loss."));
+		return false;
+	}
+
+	if (!DoLoadState(filename.c_str(), error))
+		return false;
+'''
+
+[allow_frame_advance_in_hardcore]
+match = '''
+	if (Achievements::IsHardcoreModeActive())
+	{
+		Host::AddIconOSDMessage("FrameAdvanceHardcoreBlocked", ICON_FA_TRIANGLE_EXCLAMATION,
+			TRANSLATE_SV("VMManager", "Cannot frame advance while RetroAchievements Hardcore Mode is active."),
+			Host::OSD_WARNING_DURATION);
+		return;
+	}
+
+	s_frame_advance_count = num_frames;
+'''
+rewrite = '''
+	// [PATCH] unblockh: allow frame advance in hardcore mode
+	s_frame_advance_count = num_frames;
+'''
+
+[skip_boot_hardcore_prompt]
+match = '''
+	if (Achievements::IsHardcoreModeActive() && (!state_to_load.empty() || DebugInterface::getPauseOnEntry()))
+		return VMBootResult::PromptDisableHardcoreMode;
+
+	if (boot_params.start_unlimited.value_or(false))
+'''
+rewrite = '''
+	// [PATCH] unblockh: skip boot prompt to disable hardcore when loading state or debug entry
+	if (boot_params.start_unlimited.value_or(false))
+'''
+
+[disable_enforce_challenge_mode_settings]
+match = '''
+	if (!Achievements::IsHardcoreModeActive())
+	{
+		return;
+	}
+
+	static constexpr auto ClampSpeed = [](float& rate) {
+		if (rate > 0.0f && rate < 1.0f)
+			rate = 1.0f;
+	};
+
+	// Can't use slow motion.
+	ClampSpeed(EmuConfig.EmulationSpeed.NominalScalar);
+	ClampSpeed(EmuConfig.EmulationSpeed.TurboScalar);
+	ClampSpeed(EmuConfig.EmulationSpeed.SlomoScalar);
+
+	// Can't use cheats.
+	if (EmuConfig.EnableCheats)
+	{
+		Host::AddIconOSDMessage("ChallengeDisableCheats", ICON_FA_TRIANGLE_EXCLAMATION,
+			TRANSLATE_SV("VMManager", "Cheats have been disabled due to RetroAchievements Hardcore Mode."),
+			Host::OSD_WARNING_DURATION);
+		EmuConfig.EnableCheats = false;
+	}
+
+	// Input recording/playback is probably an issue.
+	EmuConfig.EnableRecordingTools = false;
+	EmuConfig.EnablePINE = false;
+
+	// Framerates should be at default.
+	EmuConfig.GS.FramerateNTSC = Pcsx2Config::GSOptions::DEFAULT_FRAME_RATE_NTSC;
+	EmuConfig.GS.FrameratePAL = Pcsx2Config::GSOptions::DEFAULT_FRAME_RATE_PAL;
+
+	// You can overclock, but not underclock (since that might slow down the game and make it easier).
+	EmuConfig.Speedhacks.EECycleRate =
+		std::max<decltype(EmuConfig.Speedhacks.EECycleRate)>(EmuConfig.Speedhacks.EECycleRate, 0);
+	EmuConfig.Speedhacks.EECycleSkip = 0;
+}
+'''
+rewrite = '''
+	// [PATCH] unblockh: do not enforce challenge mode restrictions on emulator settings
+}
+'''

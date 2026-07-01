@@ -1,0 +1,26 @@
+# pcsx2/Patch.cpp
+
+[allow_patch_files_on_disk_in_hardcore]
+match = '''
+	if (for_ui || !Achievements::IsHardcoreModeActive())
+		disk_patch_files = FindPatchFilesOnDisk(serial, crc, cheats, for_ui);
+'''
+rewrite = '''
+	// [PATCH] unblockh: always load patch files from disk regardless of hardcore mode
+	disk_patch_files = FindPatchFilesOnDisk(serial, crc, cheats, for_ui);
+'''
+
+[allow_cheats_in_hardcore]
+match = '''
+	if (EmuConfig.EnableCheats && !Achievements::IsHardcoreModeActive())
+		s_enabled_cheats = Host::GetStringListSetting(CHEATS_CONFIG_SECTION, PATCH_ENABLE_CONFIG_KEY);
+	else
+		s_enabled_cheats = {};
+'''
+rewrite = '''
+	// [PATCH] unblockh: allow cheats in hardcore mode
+	if (EmuConfig.EnableCheats)
+		s_enabled_cheats = Host::GetStringListSetting(CHEATS_CONFIG_SECTION, PATCH_ENABLE_CONFIG_KEY);
+	else
+		s_enabled_cheats = {};
+'''

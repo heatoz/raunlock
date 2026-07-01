@@ -1,0 +1,16 @@
+# pcsx2-qt/LogWindow.cpp
+
+[allow_ee_sio_write_in_hardcore]
+match = '''
+		if (success && Achievements::IsHardcoreModeActive())
+		{
+			Console.Warning("Cannot write to EE SIO RX FIFO while RetroAchievements hardcore mode is active.");
+			success = false;
+		}
+
+		if (success)
+'''
+rewrite = '''
+		// [PATCH] unblockh: allow EE SIO write in hardcore mode
+		if (success)
+'''

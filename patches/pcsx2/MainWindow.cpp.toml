@@ -1,0 +1,44 @@
+# pcsx2-qt/MainWindow.cpp
+
+[keep_load_state_menu_enabled_in_hardcore]
+match = '''
+	m_ui.menuLoadState->setEnabled(running && !Achievements::IsHardcoreModeActive());
+'''
+rewrite = '''
+	m_ui.menuLoadState->setEnabled(running);
+'''
+
+[keep_toolbar_load_state_enabled_in_hardcore]
+match = '''
+	m_ui.actionToolbarLoadState->setEnabled(running && !Achievements::IsHardcoreModeActive());
+'''
+rewrite = '''
+	m_ui.actionToolbarLoadState->setEnabled(running);
+'''
+
+[keep_debugger_enabled_in_hardcore]
+match = '''
+void MainWindow::onAchievementsHardcoreModeChanged(bool enabled)
+{
+	// disable debugger while hardcore mode is active
+	m_ui.actionDebugger->setDisabled(enabled);
+
+	// refresh emulation actions to show/hide load state buttons based on hardcore mode
+	updateEmulationActions(s_vm_valid, s_vm_valid, false);
+
+	if (enabled)
+	{
+		// If PauseOnEntry is enabled, we prompt the user to disable Hardcore Mode
+		// or cancel the action later, so we should keep the debugger around
+		if (g_debugger_window && !DebugInterface::getPauseOnEntry())
+			DebuggerWindow::destroyInstance();
+	}
+}
+'''
+rewrite = '''
+void MainWindow::onAchievementsHardcoreModeChanged(bool enabled)
+{
+	// [PATCH] unblockh: keep debugger and load state enabled in hardcore mode
+	updateEmulationActions(s_vm_valid, s_vm_valid, false);
+}
+'''
