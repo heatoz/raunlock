@@ -9,12 +9,12 @@ Save state. Load state. Rewind. Cheats. Enjoy! :)
 Be on the root folder of the emulator source code. Run:
 
 ```
-./patch <project> [--dry-run]
+./raunlock <project> [--dry-run]
 ```
 
 ```
-./patch duckstation
-./patch duckstation --dry-run
+./raunlock duckstation
+./raunlock duckstation --dry-run
 ```
 Now compile!<br>
 
@@ -66,7 +66,7 @@ Requires Python 3.10+ and PyInstaller.
 
 ```
 pip install pyinstaller
-pyinstaller --onefile --add-data "patches:patches" patch.py
+pyinstaller --onefile --add-data "patches:patches" --name raunlock patch.py
 ```
 
 The resulting binary is written to `dist/patch`. The `patches/` directory is bundled into the executable, so the binary is self-contained and can be distributed without the source tree.
@@ -75,7 +75,7 @@ The resulting binary is written to `dist/patch`. The `patches/` directory is bun
 
 1. Create a folder under `patches/<project>/`.
 2. Add one or more `.toml` files following the format above.
-3. Run `./patch <project> --dry-run` to verify before applying.
+3. Run `./raunlock <project> --dry-run` to verify before applying.
 
 ## Contributing
 
