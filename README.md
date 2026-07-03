@@ -4,6 +4,8 @@ A command-line tool for applying source code patches on emulators: removes the r
 <br>
 Save state. Load state. Rewind. Cheats. Enjoy! :)
 
+<br>
+
 ## Usage
 
 Be on the root folder of the emulator source code. Run:
@@ -11,14 +13,17 @@ Be on the root folder of the emulator source code. Run:
 ```
 ./raunlock <project> [--dry-run]
 ```
+`--dry-run` prints a unified diff to stdout without modifying any files. Useful for verifying patches before applying them.
 
+<br>
+
+Example:
 ```
 ./raunlock duckstation
-./raunlock duckstation --dry-run
 ```
-Now compile!<br>
+Now compile the emulator!<br>
 
-`--dry-run` prints a unified diff to stdout without modifying any files. Useful for verifying patches before applying them.
+<br>
 
 ## How patches work
 
@@ -47,20 +52,9 @@ The tool searches for the `match` text verbatim in the target file. If the exact
 
 If a section's match cannot be found, it is reported as `[MISS]` and skipped. The remaining sections in the file still run.
 
-## Output
+<br>
 
-```
-duckstation -- 3 patch(es) in /home/user/duckstation
-
-> achievements.toml -> src/core/achievements.cpp (patching)
-  [ok] disable_achievement_lockout
-  [ok] skip_hardcore_check (reindented to 4)
-  [MISS] remove_leaderboard_submit  <-- match not found, skipped
-
-1 ok  1 failed
-```
-
-## Compiling
+## Compiling raunlock
 
 Requires Python 3.10+ and PyInstaller.
 
@@ -69,13 +63,17 @@ pip install pyinstaller
 pyinstaller --onefile --add-data "patches:patches" --name raunlock patch.py
 ```
 
-The resulting binary is written to `dist/patch`. The `patches/` directory is bundled into the executable, so the binary is self-contained and can be distributed without the source tree.
+The resulting binary is written to `dist/raunlock`. The `patches/` directory is bundled into the executable, so the binary is self-contained and can be distributed without the source tree.
+
+<br>
 
 ## Adding patches for a new project
 
 1. Create a folder under `patches/<project>/`.
 2. Add one or more `.toml` files following the format above.
 3. Run `./raunlock <project> --dry-run` to verify before applying.
+
+<br>
 
 ## Contributing
 
