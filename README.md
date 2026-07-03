@@ -1,4 +1,4 @@
-# unblock-hardcore
+# raunlock
 
 A command-line tool for applying source code patches on emulators: removes the restrictions of RetroAchievements Hardcore mode.<br>
 <br>
