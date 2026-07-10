@@ -18,7 +18,7 @@ match = '''
          {
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow entry state load in hardcore mode
+   // [PATCH] raunlock: allow entry state load in hardcore mode
    {
 #ifdef HAVE_BSV_MOVIE
       /* Ignore entry state if we're doing bsv playback (we do want it
@@ -44,7 +44,7 @@ match = '''
       /* Check rewind hotkey */
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow rewind hotkey in hardcore mode
+   // [PATCH] raunlock: allow rewind hotkey in hardcore mode
    cheevos_hardcore_active = rcheevos_hardcore_active();
    {
       /* Check rewind hotkey */
@@ -77,7 +77,7 @@ match = '''
          frameadvance_pressed = BIT256_GET(current_bits, RARCH_FRAMEADVANCE);
 '''
 rewrite = '''
-      // [PATCH] unblockh: allow frame advance and unrestricted pause in hardcore mode
+      // [PATCH] raunlock: allow frame advance and unrestricted pause in hardcore mode
       {
          frameadvance_pressed = BIT256_GET(current_bits, RARCH_FRAMEADVANCE);
 '''
@@ -106,7 +106,7 @@ match = '''
          /* Check slowmotion hotkeys */
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow slowmotion in hardcore mode
+   // [PATCH] raunlock: allow slowmotion in hardcore mode
    {
       {
          /* Check slowmotion hotkeys */

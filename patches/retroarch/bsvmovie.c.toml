@@ -8,7 +8,7 @@ match = '''
          k = handle->key_events[i];
 '''
 rewrite = '''
-         // [PATCH] unblockh: allow BSV key event replay in hardcore mode
+         // [PATCH] raunlock: allow BSV key event replay in hardcore mode
          k = handle->key_events[i];
 '''
 
@@ -20,7 +20,7 @@ match = '''
       return bsv_result;
 '''
 rewrite = '''
-      // [PATCH] unblockh: allow BSV movie read state in hardcore mode
+      // [PATCH] raunlock: allow BSV movie read state in hardcore mode
       return bsv_result;
 '''
 
@@ -33,7 +33,7 @@ match = '''
    if (!movie_find_checkpoint_before(input_st->bsv_movie_state_handle, frame, true,
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow movie seek in hardcore mode
+   // [PATCH] raunlock: allow movie seek in hardcore mode
    if (!movie_find_checkpoint_before(input_st->bsv_movie_state_handle, frame, true,
 '''
 
@@ -46,7 +46,7 @@ match = '''
    input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_NEXT_CHECKPOINT;
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow movie skip-next in hardcore mode
+   // [PATCH] raunlock: allow movie skip-next in hardcore mode
    input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_NEXT_CHECKPOINT;
 '''
 
@@ -59,6 +59,6 @@ match = '''
    input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_PREV_CHECKPOINT;
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow movie skip-prev in hardcore mode
+   // [PATCH] raunlock: allow movie skip-prev in hardcore mode
    input_st->bsv_movie_state.flags |= BSV_FLAG_MOVIE_PREV_CHECKPOINT;
 '''

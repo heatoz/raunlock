@@ -8,7 +8,7 @@ match = '''
 '''
 rewrite = '''
    case RC_CLIENT_EVENT_RESET:
-      // [PATCH] unblockh: suppress rc_client reset event (triggered by rewind)
+      // [PATCH] raunlock: suppress rc_client reset event (triggered by rewind)
       break;
 '''
 
@@ -26,7 +26,7 @@ match = '''
 '''
 rewrite = '''
 #if HAVE_REWIND
-   // [PATCH] unblockh: always reinit rewind after game load, even in hardcore
+   // [PATCH] raunlock: always reinit rewind after game load, even in hardcore
    {
       /* Re-enable rewind. Additional space will be
        * allocated for the achievement state data */

@@ -11,7 +11,7 @@ match = '''
 void cheat_manager_set_code(unsigned i, const char *str)
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow cheats in hardcore mode
+   // [PATCH] raunlock: allow cheats in hardcore mode
 }
 
 void cheat_manager_set_code(unsigned i, const char *str)
@@ -28,7 +28,7 @@ match = '''
 void cheat_manager_match_action(enum cheat_match_action_type match_action, unsigned int target_match_idx, unsigned int *address, unsigned int *address_mask,
 '''
 rewrite = '''
-   // [PATCH] unblockh: allow cheat search apply in hardcore mode
+   // [PATCH] raunlock: allow cheat search apply in hardcore mode
 }
 
 void cheat_manager_match_action(enum cheat_match_action_type match_action, unsigned int target_match_idx, unsigned int *address, unsigned int *address_mask,

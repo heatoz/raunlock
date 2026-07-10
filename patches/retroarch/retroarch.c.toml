@@ -14,7 +14,7 @@ match = '''
          return event_load_save_files(runloop_st->flags & RUNLOOP_FLAG_IS_SRAM_LOAD_DISABLED);
 '''
 rewrite = '''
-         // [PATCH] unblockh: allow loading savefiles in hardcore mode
+         // [PATCH] raunlock: allow loading savefiles in hardcore mode
          return event_load_save_files(runloop_st->flags & RUNLOOP_FLAG_IS_SRAM_LOAD_DISABLED);
 '''
 
@@ -33,7 +33,7 @@ match = '''
             if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
 '''
 rewrite = '''
-            // [PATCH] unblockh: allow loading state in hardcore mode
+            // [PATCH] raunlock: allow loading state in hardcore mode
 #ifdef HAVE_NETWORKING
             if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
 '''
@@ -51,7 +51,7 @@ match = '''
             if (rewind_enable)
 '''
 rewrite = '''
-            // [PATCH] unblockh: allow rewind init in hardcore mode
+            // [PATCH] raunlock: allow rewind init in hardcore mode
 #ifdef HAVE_NETWORKING
             if (!netplay_driver_ctl(RARCH_NETPLAY_CTL_ALLOW_TIMESKIP, NULL))
                return false;
