@@ -1,0 +1,12 @@
+# core/nullDC.cpp
+
+[allow_loadstate_in_hardcore]
+match = '''
+	if (!dc_savestateAllowed() || settings.raHardcoreMode)
+		return;
+'''
+rewrite = '''
+	// [PATCH] raunlock: allow loading savestates in hardcore mode
+	if (!dc_savestateAllowed())
+		return;
+'''

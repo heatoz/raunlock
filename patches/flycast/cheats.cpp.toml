@@ -1,0 +1,23 @@
+# core/cheats.cpp
+
+[allow_cheat_loading_in_hardcore]
+match = '''
+		if (!settings.raHardcoreMode && !gameId.empty())
+		{
+'''
+rewrite = '''
+		// [PATCH] raunlock: allow loading cheats in hardcore mode
+		if (!gameId.empty())
+		{
+'''
+
+[allow_widescreen_cheats_in_hardcore]
+match = '''
+	if (config::WidescreenGameHacks && !settings.raHardcoreMode)
+	{
+'''
+rewrite = '''
+	// [PATCH] raunlock: allow widescreen cheats in hardcore mode
+	if (config::WidescreenGameHacks)
+	{
+'''

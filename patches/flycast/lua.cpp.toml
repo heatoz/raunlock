@@ -1,0 +1,12 @@
+# core/lua/lua.cpp
+
+[allow_lua_callbacks_in_hardcore]
+match = '''
+	if (L == nullptr || settings.raHardcoreMode)
+		return;
+'''
+rewrite = '''
+	// [PATCH] raunlock: allow Lua callbacks in hardcore mode
+	if (L == nullptr)
+		return;
+'''

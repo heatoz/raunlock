@@ -1,0 +1,35 @@
+# core/ui/gui.cpp
+
+[allow_cheats_button_in_hardcore]
+match = '''
+			DisabledScope _{settings.network.online || settings.raHardcoreMode};
+
+			if (IconButton(ICON_FA_MASK, T("Cheats"), ScaledVec2(buttonWidth, 50)).realize() && !settings.network.online)
+'''
+rewrite = '''
+			// [PATCH] raunlock: allow cheats button in hardcore mode
+			DisabledScope _{settings.network.online};
+
+			if (IconButton(ICON_FA_MASK, T("Cheats"), ScaledVec2(buttonWidth, 50)).realize() && !settings.network.online)
+'''
+
+[allow_load_state_button_in_hardcore]
+match = '''
+				DisabledScope _{settings.raHardcoreMode || savestateDate == 0};
+				if (IconButton(ICON_FA_CLOCK_ROTATE_LEFT, T("Load State"), ScaledVec2(buttonWidth, 50)).realize() && dc_savestateAllowed())
+'''
+rewrite = '''
+				// [PATCH] raunlock: allow load state button in hardcore mode
+				DisabledScope _{savestateDate == 0};
+				if (IconButton(ICON_FA_CLOCK_ROTATE_LEFT, T("Load State"), ScaledVec2(buttonWidth, 50)).realize() && dc_savestateAllowed())
+'''
+
+[allow_lua_overlay_in_hardcore]
+match = '''
+	if (!settings.raHardcoreMode)
+		lua::overlay();
+'''
+rewrite = '''
+	// [PATCH] raunlock: allow Lua overlay in hardcore mode
+	lua::overlay();
+'''

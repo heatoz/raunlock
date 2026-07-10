@@ -1,0 +1,17 @@
+# core/emulator.cpp
+
+[remove_hardcore_speed_and_widescreen_overrides]
+match = '''
+	if (config::GGPOEnable || settings.raHardcoreMode)
+		config::Sh4Clock.override(200);
+	if (settings.raHardcoreMode)
+	{
+		config::WidescreenGameHacks.override(false);
+		config::DynarecEnabled.override(true);
+	}
+'''
+rewrite = '''
+	// [PATCH] raunlock: do not enforce speed/widescreen/dynarec restrictions in hardcore mode
+	if (config::GGPOEnable)
+		config::Sh4Clock.override(200);
+'''
