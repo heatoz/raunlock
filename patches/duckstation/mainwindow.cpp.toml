@@ -5,7 +5,7 @@ match = '''
   m_ui.actionResumeLastState->setDisabled(starting_or_running || achievements_hardcore_mode);
 '''
 rewrite = '''
-  m_ui.actionResumeLastState->setDisabled(starting_or_running); // [PATCH] unblockh: allow resume in hardcore mode
+  m_ui.actionResumeLastState->setDisabled(starting_or_running); // [PATCH] raunlock: allow resume in hardcore mode
 '''
 
 [update_emulation_actions_cheats_toolbar_hardcore]
@@ -13,7 +13,7 @@ match = '''
   m_ui.actionCheatsToolbar->setDisabled(starting_or_not_running || achievements_hardcore_mode);
 '''
 rewrite = '''
-  m_ui.actionCheatsToolbar->setDisabled(starting_or_not_running); // [PATCH] unblockh: allow cheats toolbar in hardcore mode
+  m_ui.actionCheatsToolbar->setDisabled(starting_or_not_running); // [PATCH] raunlock: allow cheats toolbar in hardcore mode
 '''
 
 [update_emulation_actions_cheats_menu_hardcore]
@@ -26,12 +26,12 @@ match = '''
   m_ui.actionFreeCamera->setDisabled(achievements_hardcore_mode);
 '''
 rewrite = '''
-  m_ui.menuCheats->menuAction()->setDisabled(starting_or_not_running); // [PATCH] unblockh: allow cheats in hardcore mode
-  m_ui.menuCheats->setDisabled(starting_or_not_running); // [PATCH] unblockh
-  m_ui.actionCPUDebugger->setDisabled(false); // [PATCH] unblockh: allow debugger in hardcore mode
-  m_ui.actionMemoryEditor->setDisabled(false); // [PATCH] unblockh: allow memory editor in hardcore mode
-  m_ui.actionMemoryScanner->setDisabled(false); // [PATCH] unblockh: allow memory scanner in hardcore mode
-  m_ui.actionFreeCamera->setDisabled(false); // [PATCH] unblockh: allow free camera in hardcore mode
+  m_ui.menuCheats->menuAction()->setDisabled(starting_or_not_running); // [PATCH] raunlock: allow cheats in hardcore mode
+  m_ui.menuCheats->setDisabled(starting_or_not_running); // [PATCH] raunlock
+  m_ui.actionCPUDebugger->setDisabled(false); // [PATCH] raunlock: allow debugger in hardcore mode
+  m_ui.actionMemoryEditor->setDisabled(false); // [PATCH] raunlock: allow memory editor in hardcore mode
+  m_ui.actionMemoryScanner->setDisabled(false); // [PATCH] raunlock: allow memory scanner in hardcore mode
+  m_ui.actionFreeCamera->setDisabled(false); // [PATCH] raunlock: allow free camera in hardcore mode
 '''
 
 [update_emulation_actions_dump_hardcore]
@@ -41,9 +41,9 @@ match = '''
   m_ui.actionDumpSPURAM->setDisabled(starting_or_not_running || achievements_hardcore_mode);
 '''
 rewrite = '''
-  m_ui.actionDumpRAM->setDisabled(starting_or_not_running); // [PATCH] unblockh: allow RAM dumps in hardcore mode
-  m_ui.actionDumpVRAM->setDisabled(starting_or_not_running); // [PATCH] unblockh
-  m_ui.actionDumpSPURAM->setDisabled(starting_or_not_running); // [PATCH] unblockh
+  m_ui.actionDumpRAM->setDisabled(starting_or_not_running); // [PATCH] raunlock: allow RAM dumps in hardcore mode
+  m_ui.actionDumpVRAM->setDisabled(starting_or_not_running); // [PATCH] raunlock
+  m_ui.actionDumpSPURAM->setDisabled(starting_or_not_running); // [PATCH] raunlock
 '''
 
 [game_list_context_load_state_hardcore]
@@ -54,7 +54,7 @@ match = '''
         });
 '''
 rewrite = '''
-        // [PATCH] unblockh: allow loading save states from game list in hardcore mode
+        // [PATCH] raunlock: allow loading save states from game list in hardcore mode
         connect(action, &QAction::triggered, [this, game_path = entry->path, path = std::move(ssi.path)]() mutable {
           startFile(std::move(game_path), std::move(path), std::nullopt);
         });
@@ -83,7 +83,7 @@ match = '''
   }
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow pause without hardcore throttle check
+  // [PATCH] raunlock: allow pause without hardcore throttle check
   g_core_thread->setSystemPaused(checked);
 '''
 
@@ -100,7 +100,7 @@ void MainWindow::onToolsMemoryEditorTriggered()
 rewrite = '''
 void MainWindow::onToolsMemoryEditorTriggered()
 {
-  // [PATCH] unblockh: allow memory editor in hardcore mode
+  // [PATCH] raunlock: allow memory editor in hardcore mode
   QtUtils::ShowOrRaiseWindow(getMemoryEditorWindow(), this, true);
 }
 '''
@@ -117,7 +117,7 @@ void MainWindow::onToolsMemoryScannerTriggered()
 rewrite = '''
 void MainWindow::onToolsMemoryScannerTriggered()
 {
-  // [PATCH] unblockh: allow memory scanner in hardcore mode
+  // [PATCH] raunlock: allow memory scanner in hardcore mode
   if (!m_memory_scanner_window)
 '''
 
@@ -133,6 +133,6 @@ void MainWindow::openCPUDebugger()
 rewrite = '''
 void MainWindow::openCPUDebugger()
 {
-  // [PATCH] unblockh: allow CPU debugger in hardcore mode
+  // [PATCH] raunlock: allow CPU debugger in hardcore mode
   if (!m_debugger_window)
 '''

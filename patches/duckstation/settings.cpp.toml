@@ -26,6 +26,6 @@ match = '''
 }
 '''
 rewrite = '''
-  // [PATCH] unblockh: removed hardcore mode setting restrictions (speed, rewind, overclock, debug)
+  // [PATCH] raunlock: removed hardcore mode setting restrictions (speed, rewind, overclock, debug)
 }
 '''

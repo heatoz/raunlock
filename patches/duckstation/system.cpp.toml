@@ -16,7 +16,7 @@ match = '''
   FlushSaveStates();
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow load state in hardcore mode
+  // [PATCH] raunlock: allow load state in hardcore mode
 
   FlushSaveStates();
 '''
@@ -35,7 +35,7 @@ match = '''
   s_state.frame_step_request = true;
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow frame step in hardcore mode
+  // [PATCH] raunlock: allow frame step in hardcore mode
   s_state.frame_step_request = true;
 '''
 
@@ -53,7 +53,7 @@ match = '''
   std::string osd_key = "UndoLoadState";
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow undo load state in hardcore mode
+  // [PATCH] raunlock: allow undo load state in hardcore mode
   std::string osd_key = "UndoLoadState";
 '''
 
@@ -86,7 +86,7 @@ match = '''
   // Are we fast booting?
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow booting with save state or exe override in hardcore mode
+  // [PATCH] raunlock: allow booting with save state or exe override in hardcore mode
 
   // Are we fast booting?
 '''
@@ -97,7 +97,7 @@ match = '''
   Achievements::DisableHardcoreMode(true, true);
 '''
 rewrite = '''
-  // [PATCH] unblockh: stop disabling hardcore! :)
+  // [PATCH] raunlock: stop disabling hardcore! :)
   // Achievements::DisableHardcoreMode(true, true);
 '''
 
@@ -107,6 +107,6 @@ match = '''
   Achievements::DisableHardcoreMode(true, false);
 '''
 rewrite = '''
-  // [PATCH] unblockh: stop disabling hardcore! :)
+  // [PATCH] raunlock: stop disabling hardcore! :)
   // Achievements::DisableHardcoreMode(true, false);
 '''

@@ -7,7 +7,7 @@ match = '''
       disk_patch_files = FindChtFilesOnDisk(serial, hash, cheats);
 '''
 rewrite = '''
-    if (true) // [PATCH] unblockh: always load disk cheat files regardless of hardcore mode
+    if (true) // [PATCH] raunlock: always load disk cheat files regardless of hardcore mode
     {
       disk_patch_files = FindChtFilesOnDisk(serial, hash, cheats);
 '''
@@ -24,7 +24,7 @@ bool Cheats::AreCheatsEnabled()
 rewrite = '''
 bool Cheats::AreCheatsEnabled()
 {
-  if (g_settings.disable_all_enhancements) // [PATCH] unblockh: allow cheats in hardcore mode
+  if (g_settings.disable_all_enhancements) // [PATCH] raunlock: allow cheats in hardcore mode
     return false;
 
   // Only in the gameini.
@@ -39,7 +39,7 @@ match = '''
     if (std::find(enable_list.begin(), enable_list.end(), p->GetName()) == enable_list.end())
 '''
 rewrite = '''
-    // [PATCH] unblockh: allow all patches regardless of disallow_for_achievements flag
+    // [PATCH] raunlock: allow all patches regardless of disallow_for_achievements flag
     if (std::find(enable_list.begin(), enable_list.end(), p->GetName()) == enable_list.end())
 '''
 
@@ -53,7 +53,7 @@ match = '''
     if (std::find(s_locals.enabled_patches.begin(), s_locals.enabled_patches.end(), p->GetName()) !=
 '''
 rewrite = '''
-    // [PATCH] unblockh: allow widescreen patch regardless of disallow_for_achievements flag
+    // [PATCH] raunlock: allow widescreen patch regardless of disallow_for_achievements flag
     if (std::find(s_locals.enabled_patches.begin(), s_locals.enabled_patches.end(), p->GetName()) !=
 '''
 
@@ -67,7 +67,7 @@ match = '''
                           });
 '''
 rewrite = '''
-        EnumerateChtFiles(serial, hash, false, false, true, true, // [PATCH] unblockh: always load patches from disk
+        EnumerateChtFiles(serial, hash, false, false, true, true, // [PATCH] raunlock: always load patches from disk
                           [](const std::string& filename, const std::string& file_contents, bool from_database) {
                             ParseFile(&s_locals.patch_codes, file_contents);
                             if (s_locals.patch_codes.size() > 0)
@@ -84,7 +84,7 @@ match = '''
       }
 '''
 rewrite = '''
-      // [PATCH] unblockh: allow setting overrides regardless of disallow_for_achievements
+      // [PATCH] raunlock: allow setting overrides regardless of disallow_for_achievements
       if (code->HasAnySettingOverrides())
         return true;
 '''
@@ -95,6 +95,6 @@ match = '''
           code->ApplySettingOverrides();
 '''
 rewrite = '''
-        // [PATCH] unblockh: apply setting overrides regardless of disallow_for_achievements
+        // [PATCH] raunlock: apply setting overrides regardless of disallow_for_achievements
         code->ApplySettingOverrides();
 '''

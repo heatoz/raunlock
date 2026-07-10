@@ -9,7 +9,7 @@ match = '''
   for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow debug windows in hardcore mode
+  // [PATCH] raunlock: allow debug windows in hardcore mode
   for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
 '''
 
@@ -27,7 +27,7 @@ match = '''
     const bool enabled = (!block_all && Core::GetBaseBoolSettingValue(DEBUG_WINDOW_CONFIG_SECTION, info.name, false));
 '''
 rewrite = '''
-  // [PATCH] unblockh: allow debug windows in hardcore mode
+  // [PATCH] raunlock: allow debug windows in hardcore mode
   bool was_changed = false;
 
   for (size_t i = 0; i < NUM_DEBUG_WINDOWS; i++)
