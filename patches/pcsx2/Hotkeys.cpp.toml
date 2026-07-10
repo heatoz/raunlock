@@ -38,7 +38,7 @@ static bool CanPause()
 rewrite = '''
 static bool CanPause()
 {
-	// [PATCH] unblockh: remove hardcore pause cooldown
+	// [PATCH] raunlock: remove hardcore pause cooldown
 	return true;
 }
 '''

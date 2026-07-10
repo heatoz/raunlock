@@ -11,6 +11,6 @@ match = '''
 		if (success)
 '''
 rewrite = '''
-		// [PATCH] unblockh: allow EE SIO write in hardcore mode
+		// [PATCH] raunlock: allow EE SIO write in hardcore mode
 		if (success)
 '''

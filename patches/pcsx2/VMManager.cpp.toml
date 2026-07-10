@@ -16,7 +16,7 @@ bool VMManager::LoadState(const char* filename, Error* error)
 rewrite = '''
 bool VMManager::LoadState(const char* filename, Error* error)
 {
-	// [PATCH] unblockh: allow load state in hardcore mode
+	// [PATCH] raunlock: allow load state in hardcore mode
 	if (MemcardBusy::IsBusy())
 '''
 
@@ -41,7 +41,7 @@ match = '''
 		return false;
 '''
 rewrite = '''
-	// [PATCH] unblockh: allow load state from slot in hardcore mode
+	// [PATCH] raunlock: allow load state from slot in hardcore mode
 	if (MemcardBusy::IsBusy())
 	{
 		Error::SetString(error,
@@ -67,7 +67,7 @@ match = '''
 	s_frame_advance_count = num_frames;
 '''
 rewrite = '''
-	// [PATCH] unblockh: allow frame advance in hardcore mode
+	// [PATCH] raunlock: allow frame advance in hardcore mode
 	s_frame_advance_count = num_frames;
 '''
 
@@ -79,7 +79,7 @@ match = '''
 	if (boot_params.start_unlimited.value_or(false))
 '''
 rewrite = '''
-	// [PATCH] unblockh: skip boot prompt to disable hardcore when loading state or debug entry
+	// [PATCH] raunlock: skip boot prompt to disable hardcore when loading state or debug entry
 	if (boot_params.start_unlimited.value_or(false))
 '''
 
@@ -124,6 +124,6 @@ match = '''
 }
 '''
 rewrite = '''
-	// [PATCH] unblockh: do not enforce challenge mode restrictions on emulator settings
+	// [PATCH] raunlock: do not enforce challenge mode restrictions on emulator settings
 }
 '''

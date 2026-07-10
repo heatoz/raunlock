@@ -6,7 +6,7 @@ match = '''
 		disk_patch_files = FindPatchFilesOnDisk(serial, crc, cheats, for_ui);
 '''
 rewrite = '''
-	// [PATCH] unblockh: always load patch files from disk regardless of hardcore mode
+	// [PATCH] raunlock: always load patch files from disk regardless of hardcore mode
 	disk_patch_files = FindPatchFilesOnDisk(serial, crc, cheats, for_ui);
 '''
 
@@ -18,7 +18,7 @@ match = '''
 		s_enabled_cheats = {};
 '''
 rewrite = '''
-	// [PATCH] unblockh: allow cheats in hardcore mode
+	// [PATCH] raunlock: allow cheats in hardcore mode
 	if (EmuConfig.EnableCheats)
 		s_enabled_cheats = Host::GetStringListSetting(CHEATS_CONFIG_SECTION, PATCH_ENABLE_CONFIG_KEY);
 	else

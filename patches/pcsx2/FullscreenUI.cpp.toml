@@ -5,7 +5,7 @@ match = '''
 				const bool can_load_state = s_current_disc_crc != 0 && !Achievements::IsHardcoreModeActive();
 '''
 rewrite = '''
-				// [PATCH] unblockh: allow load state in hardcore mode
+				// [PATCH] raunlock: allow load state in hardcore mode
 				const bool can_load_state = s_current_disc_crc != 0;
 '''
 

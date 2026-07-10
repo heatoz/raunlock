@@ -38,7 +38,7 @@ void MainWindow::onAchievementsHardcoreModeChanged(bool enabled)
 rewrite = '''
 void MainWindow::onAchievementsHardcoreModeChanged(bool enabled)
 {
-	// [PATCH] unblockh: keep debugger and load state enabled in hardcore mode
+	// [PATCH] raunlock: keep debugger and load state enabled in hardcore mode
 	updateEmulationActions(s_vm_valid, s_vm_valid, false);
 }
 '''
