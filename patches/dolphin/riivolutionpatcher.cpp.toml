@@ -1,0 +1,14 @@
+# Source/Core/DiscIO/RiivolutionPatcher.cpp
+
+[allow_memory_patches]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+    return;
+
+  if (value.empty())
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow Riivolution memory patches in hardcore mode
+
+  if (value.empty())
+'''

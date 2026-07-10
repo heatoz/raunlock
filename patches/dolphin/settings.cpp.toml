@@ -1,0 +1,12 @@
+# Source/Core/DolphinQt/Settings.cpp
+
+[allow_debug_mode_enabled]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+    enabled = false;
+  if (IsDebugModeEnabled() != enabled)
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow debug mode in hardcore mode
+  if (IsDebugModeEnabled() != enabled)
+'''

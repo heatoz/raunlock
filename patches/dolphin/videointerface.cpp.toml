@@ -1,0 +1,16 @@
+# Source/Core/Core/HW/VideoInterface.cpp
+
+[allow_vi_overclock_below_100]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive() && m_config_vi_oc_factor < 1.0f)
+  {
+    Config::SetCurrent(Config::MAIN_VI_OVERCLOCK, 1.0f);
+    m_config_vi_oc_factor = 1.0f;
+    OSD::AddMessage("Minimum VBI frequency is 100% in Hardcore Mode");
+  }
+  UpdateRefreshRate();
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow VI overclock below 100% in hardcore mode
+  UpdateRefreshRate();
+'''

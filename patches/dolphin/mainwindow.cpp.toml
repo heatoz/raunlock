@@ -1,0 +1,53 @@
+# Source/Core/DolphinQt/MainWindow.cpp
+
+[allow_debug_mode_on_init]
+match = '''
+  AchievementManager::GetInstance().Init(reinterpret_cast<void*>(winId()));
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+    Settings::Instance().SetDebugModeEnabled(false);
+  // This needs to trigger on both RA_HARDCORE_ENABLED and RA_ENABLED
+'''
+rewrite = '''
+  AchievementManager::GetInstance().Init(reinterpret_cast<void*>(winId()));
+  // [PATCH] raunlock: do not force-disable debug mode on hardcore init
+  // This needs to trigger on both RA_HARDCORE_ENABLED and RA_ENABLED
+'''
+
+[allow_play_recording]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+  {
+    ModalMessageBox::critical(
+        this, tr("Error"),
+        tr("Playback of input recordings is disabled in RetroAchievements hardcore mode."));
+    return;
+  }
+
+  QString dtm_file = DolphinFileDialog::getOpenFileName(
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow TAS playback in hardcore mode
+
+  QString dtm_file = DolphinFileDialog::getOpenFileName(
+'''
+
+[allow_debug_mode_on_hardcore_change]
+match = '''
+  bool hardcore_active = AchievementManager::GetInstance().IsHardcoreModeActive();
+  if (hardcore_active)
+    Settings::Instance().SetDebugModeEnabled(false);
+  // EmulationStateChanged causes several dialogs to redraw, including anything affected by hardcore
+  // mode. Every dialog that depends on hardcore mode is redrawn by EmulationStateChanged.
+  if (hardcore_active != m_former_hardcore_setting)
+    emit Settings::Instance().EmulationStateChanged(Core::GetState(Core::System::GetInstance()));
+  m_former_hardcore_setting = hardcore_active;
+'''
+rewrite = '''
+  bool hardcore_active = AchievementManager::GetInstance().IsHardcoreModeActive();
+  // [PATCH] raunlock: do not force-disable debug mode on hardcore change
+  // EmulationStateChanged causes several dialogs to redraw, including anything affected by hardcore
+  // mode. Every dialog that depends on hardcore mode is redrawn by EmulationStateChanged.
+  if (hardcore_active != m_former_hardcore_setting)
+    emit Settings::Instance().EmulationStateChanged(Core::GetState(Core::System::GetInstance()));
+  m_former_hardcore_setting = hardcore_active;
+'''

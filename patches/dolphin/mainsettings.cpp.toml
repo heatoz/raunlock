@@ -1,0 +1,11 @@
+# Source/Core/Core/Config/MainSettings.cpp
+
+[allow_debugging_in_hardcore]
+match = '''
+  return Config::Get(::Config::MAIN_ENABLE_DEBUGGING) &&
+         !AchievementManager::GetInstance().IsHardcoreModeActive();
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow debugging in hardcore mode
+  return Config::Get(::Config::MAIN_ENABLE_DEBUGGING);
+'''

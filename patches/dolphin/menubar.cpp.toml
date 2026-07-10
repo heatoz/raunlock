@@ -1,0 +1,37 @@
+# Source/Core/DolphinQt/MenuBar.cpp
+
+[enable_state_load_frame_advance_recording]
+match = '''
+  const bool hardcore = AchievementManager::GetInstance().IsHardcoreModeActive();
+  m_state_load_menu->setEnabled(running && !hardcore);
+  m_frame_advance_action->setEnabled(running && !hardcore);
+
+  // Movie
+  m_recording_read_only->setEnabled(running);
+  if (!running)
+  {
+    m_recording_stop->setEnabled(false);
+    m_recording_export->setEnabled(false);
+  }
+  const bool can_start_from_boot = m_game_selected && state == Core::State::Uninitialized;
+  const bool can_start_from_savestate =
+      state == Core::State::Running || state == Core::State::Paused;
+  m_recording_play->setEnabled(can_start_from_boot && !hardcore);
+'''
+rewrite = '''
+  // [PATCH] raunlock: state load, frame advance and recording unrestricted in hardcore mode
+  m_state_load_menu->setEnabled(running);
+  m_frame_advance_action->setEnabled(running);
+
+  // Movie
+  m_recording_read_only->setEnabled(running);
+  if (!running)
+  {
+    m_recording_stop->setEnabled(false);
+    m_recording_export->setEnabled(false);
+  }
+  const bool can_start_from_boot = m_game_selected && state == Core::State::Uninitialized;
+  const bool can_start_from_savestate =
+      state == Core::State::Running || state == Core::State::Paused;
+  m_recording_play->setEnabled(can_start_from_boot);
+'''

@@ -1,0 +1,63 @@
+# Source/Core/Core/CheatSearch.cpp
+
+[allow_new_search]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+    return std::unexpected{Cheats::SearchErrorCode::DisabledInHardcoreMode};
+  auto& system = guard.GetSystem();
+  std::vector<Cheats::SearchResult<T>> results;
+  const Core::State core_state = Core::GetState(system);
+  if (core_state != Core::State::Running && core_state != Core::State::Paused)
+    return std::unexpected{Cheats::SearchErrorCode::NoEmulationActive};
+
+  const auto& ppc_state = system.GetPPCState();
+  if (address_space == PowerPC::RequestedAddressSpace::Virtual && !ppc_state.msr.DR)
+    return std::unexpected{Cheats::SearchErrorCode::VirtualAddressesCurrentlyNotAccessible};
+
+  for (const Cheats::MemoryRange& range : memory_ranges)
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow cheat search in hardcore mode
+  auto& system = guard.GetSystem();
+  std::vector<Cheats::SearchResult<T>> results;
+  const Core::State core_state = Core::GetState(system);
+  if (core_state != Core::State::Running && core_state != Core::State::Paused)
+    return std::unexpected{Cheats::SearchErrorCode::NoEmulationActive};
+
+  const auto& ppc_state = system.GetPPCState();
+  if (address_space == PowerPC::RequestedAddressSpace::Virtual && !ppc_state.msr.DR)
+    return std::unexpected{Cheats::SearchErrorCode::VirtualAddressesCurrentlyNotAccessible};
+
+  for (const Cheats::MemoryRange& range : memory_ranges)
+'''
+
+[allow_next_search]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+    return std::unexpected{Cheats::SearchErrorCode::DisabledInHardcoreMode};
+  auto& system = guard.GetSystem();
+  std::vector<Cheats::SearchResult<T>> results;
+  const Core::State core_state = Core::GetState(system);
+  if (core_state != Core::State::Running && core_state != Core::State::Paused)
+    return std::unexpected{Cheats::SearchErrorCode::NoEmulationActive};
+
+  const auto& ppc_state = system.GetPPCState();
+  if (address_space == PowerPC::RequestedAddressSpace::Virtual && !ppc_state.msr.DR)
+    return std::unexpected{Cheats::SearchErrorCode::VirtualAddressesCurrentlyNotAccessible};
+
+  for (const auto& previous_result : previous_results)
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow cheat search in hardcore mode
+  auto& system = guard.GetSystem();
+  std::vector<Cheats::SearchResult<T>> results;
+  const Core::State core_state = Core::GetState(system);
+  if (core_state != Core::State::Running && core_state != Core::State::Paused)
+    return std::unexpected{Cheats::SearchErrorCode::NoEmulationActive};
+
+  const auto& ppc_state = system.GetPPCState();
+  if (address_space == PowerPC::RequestedAddressSpace::Virtual && !ppc_state.msr.DR)
+    return std::unexpected{Cheats::SearchErrorCode::VirtualAddressesCurrentlyNotAccessible};
+
+  for (const auto& previous_result : previous_results)
+'''

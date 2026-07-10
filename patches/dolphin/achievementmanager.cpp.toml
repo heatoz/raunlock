@@ -1,0 +1,16 @@
+# Source/Core/Core/AchievementManager.cpp
+
+[remove_hardcore_side_effects]
+match = '''
+  rc_client_set_hardcore_enabled(m_client, Config::Get(Config::RA_HARDCORE_ENABLED));
+  if (Config::Get(Config::RA_HARDCORE_ENABLED))
+  {
+    if (Config::Get(Config::MAIN_EMULATION_SPEED) < 1.0f)
+      Config::SetBaseOrCurrent(Config::MAIN_EMULATION_SPEED, 1.0f);
+    Config::SetBaseOrCurrent(Config::FREE_LOOK_ENABLED, false);
+  }
+'''
+rewrite = '''
+  rc_client_set_hardcore_enabled(m_client, Config::Get(Config::RA_HARDCORE_ENABLED));
+  // [PATCH] raunlock: do not enforce speed floor or disable free look when hardcore activates
+'''

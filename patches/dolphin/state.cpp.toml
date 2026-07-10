@@ -1,0 +1,17 @@
+# Source/Core/Core/State.cpp
+
+[allow_load_savestates]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+  {
+    OSD::AddMessage("Loading savestates is disabled in RetroAchievements hardcore mode");
+    return false;
+  }
+
+  return true;
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow loading savestates in hardcore mode
+
+  return true;
+'''

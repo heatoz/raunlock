@@ -1,0 +1,22 @@
+# Source/Core/DolphinQt/Settings/InterfacePane.cpp
+
+[allow_debugging_ui_in_hardcore]
+match = '''
+  bool hardcore = AchievementManager::GetInstance().IsHardcoreModeActive();
+  SignalBlocking(m_checkbox_show_debugging_ui)->setEnabled(!hardcore);
+  if (hardcore)
+  {
+    m_checkbox_show_debugging_ui->SetDescription(tr("%1<br><br>%2")
+                                                     .arg(tr(TR_SHOW_DEBUGGING_UI_DESCRIPTION))
+                                                     .arg(tr(TR_DISABLED_IN_HARDCORE_DESCRIPTION)));
+  }
+  else
+  {
+    m_checkbox_show_debugging_ui->SetDescription(tr(TR_SHOW_DEBUGGING_UI_DESCRIPTION));
+  }
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow debug UI in hardcore mode
+  SignalBlocking(m_checkbox_show_debugging_ui)->setEnabled(true);
+  m_checkbox_show_debugging_ui->SetDescription(tr(TR_SHOW_DEBUGGING_UI_DESCRIPTION));
+'''

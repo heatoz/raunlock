@@ -1,0 +1,18 @@
+# Source/Core/Core/Movie.cpp
+
+[allow_play_input]
+match = '''
+  ReadHeader();
+
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+    return false;
+
+  m_total_frames = m_temp_header.frameCount;
+'''
+rewrite = '''
+  ReadHeader();
+
+  // [PATCH] raunlock: allow TAS playback in hardcore mode
+
+  m_total_frames = m_temp_header.frameCount;
+'''

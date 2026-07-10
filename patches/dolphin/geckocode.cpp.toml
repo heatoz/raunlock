@@ -1,0 +1,15 @@
+# Source/Core/Core/GeckoCode.cpp
+
+[allow_all_gecko_codes_in_hardcore]
+match = '''
+    const auto should_be_activated = [&game_id, &revision](const GeckoCode& code) {
+      return AchievementManager::GetInstance().ShouldGeckoCodeBeActivated(code, game_id, revision);
+    };
+    std::copy_if(gcodes.begin(), gcodes.end(), std::back_inserter(s_active_codes),
+                 should_be_activated);
+'''
+rewrite = '''
+    // [PATCH] raunlock: allow all enabled Gecko codes regardless of hardcore approval
+    std::copy_if(gcodes.begin(), gcodes.end(), std::back_inserter(s_active_codes),
+                 [](const GeckoCode& code) { return code.enabled; });
+'''

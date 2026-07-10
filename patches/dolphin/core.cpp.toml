@@ -1,0 +1,41 @@
+# Source/Core/Core/Core.cpp
+
+[allow_frame_step]
+match = '''
+  if (AchievementManager::GetInstance().IsHardcoreModeActive())
+  {
+    OSD::AddMessage("Frame stepping is disabled in RetroAchievements hardcore mode");
+    return;
+  }
+
+  std::lock_guard lock(s_core_mutex);
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow frame stepping in hardcore mode
+
+  std::lock_guard lock(s_core_mutex);
+'''
+
+[allow_gdb_socket]
+match = '''
+    std::string gdb_socket = Config::Get(Config::MAIN_GDB_SOCKET);
+    if (!gdb_socket.empty() && !AchievementManager::GetInstance().IsHardcoreModeActive())
+    {
+'''
+rewrite = '''
+    std::string gdb_socket = Config::Get(Config::MAIN_GDB_SOCKET);
+    if (!gdb_socket.empty())
+    {
+'''
+
+[allow_gdb_port]
+match = '''
+      int gdb_port = Config::Get(Config::MAIN_GDB_PORT);
+      if (gdb_port > 0 && !AchievementManager::GetInstance().IsHardcoreModeActive())
+      {
+'''
+rewrite = '''
+      int gdb_port = Config::Get(Config::MAIN_GDB_PORT);
+      if (gdb_port > 0)
+      {
+'''

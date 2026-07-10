@@ -1,0 +1,14 @@
+# Source/Core/Core/ActionReplay.cpp
+
+[allow_all_ar_codes_in_hardcore]
+match = '''
+  const auto should_be_activated = [&game_id, &revision](const ARCode& code) {
+    return AchievementManager::GetInstance().ShouldARCodeBeActivated(code, game_id, revision);
+  };
+  std::copy_if(codes.begin(), codes.end(), std::back_inserter(s_active_codes), should_be_activated);
+'''
+rewrite = '''
+  // [PATCH] raunlock: allow all enabled AR codes regardless of hardcore approval
+  std::copy_if(codes.begin(), codes.end(), std::back_inserter(s_active_codes),
+               [](const ARCode& code) { return code.enabled; });
+'''
